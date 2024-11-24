@@ -28,7 +28,8 @@
 
     <main class="section__container">
         <h1 class="notif-header">Notifikasi Peminjaman</h1>
-        <div id="notif-container"></div> <!-- Container untuk menampilkan notifikasi -->
+        <div id="notif-container"></div>
+        <!-- Container untuk menampilkan notifikasi -->
     </main>
 
     <footer class="footer" id="footer">
@@ -60,39 +61,39 @@
     <script>
         // Function to fetch notifications and display them
         function fetchNotifications() {
-            fetch('http://localhost:8080/notifications')  // URL API untuk mengambil notifikasi
+            fetch('http://localhost:8080/notifications') // URL API untuk mengambil notifikasi
                 .then(response => response.json())
                 .then(data => {
-                    const notifContainer = document.getElementById('notif-container');
-                    notifContainer.innerHTML = ''; // Clear the container before adding new notifications
-                    
-                    data.forEach(notification => {
-                        const notifCard = document.createElement('div');
-                        notifCard.classList.add('notifikasi__card');
+                        const notifContainer = document.getElementById('notif-container');
+                        notifContainer.innerHTML = ''; // Clear the container before adding new notifications
 
-                        // Menentukan class dan judul berdasarkan status
-                        if (notification.status === 'diterima') {
-                            notifCard.classList.add('diterima');
-                            notifCard.innerHTML = `
+                        data.forEach(notification => {
+                                    const notifCard = document.createElement('div');
+                                    notifCard.classList.add('notifikasi__card');
+
+                                    // Menentukan class dan judul berdasarkan status
+                                    if (notification.status === 'diterima') {
+                                        notifCard.classList.add('diterima');
+                                        notifCard.innerHTML = `
                                 <h3>Peminjaman Diterima</h3>
-                                <p>Ruangan: ${notification.room_id}, ${notification.borrow_date}, ${notification.start_time} - ${notification.end_time}</p>
+                                <p>${notification.room_id}, ${notification.borrow_date}, ${notification.start_time} - ${notification.end_time}</p>
                                 <p>Status: <span class="status-accepted">Diterima</span></p>
-                                ${notification.file ? `<a href="${notification.file}" class="btn btn-success btn-sm ml-2" style="border-radius: 5px;" download>Download Berkas</a>` : ''}
+                                ${notification.file ? `<a href="${notification.file}" class="btn btn-success btn-sm ml-0" style="border-radius: 5px;" download>Download Berkas</a>` : ''}
                             `;
                         } else if (notification.status === 'proses') {
                             notifCard.classList.add('proses');
                             notifCard.innerHTML = `
                                 <h3>Peminjaman Proses</h3>
-                                <p>Ruangan: ${notification.room_id}, ${notification.borrow_date}, ${notification.start_time} - ${notification.end_time}</p>
+                                <p>${notification.room_id}, ${notification.borrow_date}, ${notification.start_time} - ${notification.end_time}</p>
                                 <p>Status: <span class="status-processing">Proses</span></p>
                             `;
                         } else if (notification.status === 'ditolak') {
                             notifCard.classList.add('ditolak');
                             notifCard.innerHTML = `
                                 <h3>Peminjaman Ditolak</h3>
-                                <p>Ruangan: ${notification.room_id}, ${notification.borrow_date}, ${notification.start_time} - ${notification.end_time}</p>
+                                <p>${notification.room_id}, ${notification.borrow_date}, ${notification.start_time} - ${notification.end_time}</p>
                                 <p>Status: <span class="status-rejected">Ditolak</span></p>
-                                ${notification.file ? `<a href="${notification.file}" class="btn btn-danger btn-sm ml-2" style="border-radius: 5px;" download>Download Berkas</a>` : ''}
+                                ${notification.file ? `<a href="${notification.file}" class="btn btn-danger btn-sm ml-0" style="border-radius: 5px;" download>Download Berkas</a>` : ''}
                             `;
                         }
                         

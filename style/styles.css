@@ -37,7 +37,7 @@
 
 .scroll-to-top {
     position: fixed;
-    bottom: 50px;
+    bottom: 60px;
     right: 50px;
     background-color: var(--primary-color);
     color: var(--white);
@@ -55,7 +55,11 @@
 }
 
 .scroll-to-top:hover {
-    background-color: var(--primary-color-dark);
+    background-color: #28324d;
+}
+
+.scroll-to-top:hover {
+    background-color: #28324d;
 }
 
 .scroll-to-top i {
@@ -391,7 +395,8 @@ input:not(:placeholder-shown)+label {
 .popular__card img {
     width: 700px;
     height: 210px;
-    object-fit: cover; /* This ensures the image is resized while maintaining its aspect ratio */
+    object-fit: cover;
+    /* This ensures the image is resized while maintaining its aspect ratio */
 }
 
 .popular__content {
@@ -481,7 +486,7 @@ input:not(:placeholder-shown)+label {
 }
 
 .reward__btn:hover {
-    background-color: var(--primary-color-dark);
+    background-color: #28324d;
 }
 
 .footer {

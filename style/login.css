@@ -212,8 +212,8 @@ input:focus {
     cursor: pointer;
 }
 
-.btn:hover {
-    background-color: #435681;
+body.btn:hover {
+    background-color: #28324d;
 }
 
 .login-footer {
