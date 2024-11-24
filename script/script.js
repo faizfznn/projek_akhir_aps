@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let roomsData = []; // Declare roomsData to hold fetched data
 
   // Fetch the room data from the API
-  fetch("http://localhost:8080/rooms")
+  fetch("https://aps-treamyracles-projects.vercel.app/rooms")
       .then((response) => response.json())
       .then((data) => {
           roomsData = data; // Store fetched data

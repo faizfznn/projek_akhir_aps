@@ -91,7 +91,7 @@
                 }
     
                 // Fetch data dari API menggunakan ID ruangan
-                const response = await fetch(`http://localhost:8080/rooms/${roomId}`);
+                const response = await fetch(`https://aps-treamyracles-projects.vercel.app/rooms/${roomId}`);
                 if (!response.ok) {
                     throw new Error('Gagal mengambil data ruangan.');
                 }
