@@ -52,7 +52,7 @@
 
                 // Tampilkan tanggal dan waktu yang dipilih
                 document.getElementById('selected-date').textContent = `Pada Tanggal ${date}`;
-                document.getElementById('selected-time').textContent = ` Jam ${formattedStartTime}`;
+                document.getElementById('selected-time').textContent = ` Jam ${formattedStartTime} - ${formattedEndTime}`;
             } else if (!date) {
                 // Tampilkan pesan error jika data tanggal tidak lengkap
                 document.getElementById('selected-date').innerHTML =
