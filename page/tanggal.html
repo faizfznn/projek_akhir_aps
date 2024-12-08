@@ -21,13 +21,15 @@
     <nav>
       <img
         class="logo"
-        src="../../assets/LOGO.png"
+        src="../assets/LOGO.png"
         alt="Logo FILKOMreserV"
-        onclick="window.location.href='index.html'"
+        onclick="location.reload();"
+        onclick="window.location.href='login.html'"
       />
+
       <ul class="nav__links">
         <li class="link"><a href="index.html">Beranda</a></li>
-        <li class="link"><a href="index.html#booklet">Buku Panduan</a></li>
+        <li class="link"><a href="#booklet">Buku Panduan</a></li>
         <li class="link"><a href="#footer">Kontak Kami</a></li>
         <li class="link">
           <a href="notifikasi.html" style="display: flex; align-items: center">
@@ -39,9 +41,9 @@
           </a>
         </li>
         <button
+          id="authButton"
           class="btn"
           style="color: var(--white); background-color: var(--primary-color)"
-          onclick="window.location.href='login.html'"
         >
           Login
         </button>
@@ -258,6 +260,27 @@
           if (parts.length === 2) return parts.pop().split(";").shift();
         }
       }
+
+      window.onload = function () {
+            const authButton = document.getElementById("authButton");
+    
+            // Periksa keberadaan cookie Authorization
+            if (document.cookie.includes("Authorization")) {
+                authButton.textContent = "Logout"; // Ubah teks menjadi Logout
+                authButton.onclick = function () {
+                    // Hapus cookie Authorization untuk logout
+                    document.cookie = "Authorization=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+                    document.cookie = "Username=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+                    alert("Anda telah berhasil logout.");
+                    window.location.href = "index.html"; // Arahkan ke halaman utama
+                };
+            } else {
+                authButton.textContent = "Login"; // Tetap Login
+                authButton.onclick = function () {
+                    window.location.href = "login.html"; // Arahkan ke halaman login
+                };
+            }
+        };
     </script>
   </body>
 </html>
