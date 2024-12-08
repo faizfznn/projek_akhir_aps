@@ -183,6 +183,27 @@
       }
       // Panggil fungsi untuk mengambil data dan menampilkan ruangan
       fetchRooms();
+
+      window.onload = function () {
+            const authButton = document.getElementById("authButton");
+    
+            // Periksa keberadaan cookie Authorization
+            if (document.cookie.includes("Authorization")) {
+                authButton.textContent = "Logout"; // Ubah teks menjadi Logout
+                authButton.onclick = function () {
+                    // Hapus cookie Authorization untuk logout
+                    document.cookie = "Authorization=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+                    document.cookie = "Username=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+                    alert("Anda telah berhasil logout.");
+                    window.location.href = "index.html"; // Arahkan ke halaman utama
+                };
+            } else {
+                authButton.textContent = "Login"; // Tetap Login
+                authButton.onclick = function () {
+                    window.location.href = "login.html"; // Arahkan ke halaman login
+                };
+            }
+        };
     </script>
   </body>
 </html>
