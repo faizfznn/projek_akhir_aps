@@ -214,12 +214,6 @@
         const parts = value.split(`; ${name}=`);
         if (parts.length === 2) return parts.pop().split(";").shift();
       }
-
-      // Toggle login form visibility
-      function toggleLoginForm() {
-        loginContainer.style.display =
-          loginContainer.style.display === "none" ? "block" : "none";
-      }
     </script>
   </body>
 </html>
