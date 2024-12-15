@@ -79,30 +79,66 @@
     </footer>
 
     <script>
-      // Ambil parameter dari URL
       const params = new URLSearchParams(window.location.search);
       const date = params.get("date");
       const startTime = params.get("startTime");
       const endTime = params.get("endTime");
       const capacity = params.get("capacity");
 
-      // Tampilkan tanggal dan waktu yang dipilih
       document.getElementById("selected-date").textContent = date;
       document.getElementById(
         "selected-time"
       ).textContent = `${startTime} - ${endTime}`;
 
-      // Fungsi untuk mencari ruangan
+      let notifications = [];
+
+      async function fetchNotifications() {
+        try {
+          const authorizationToken = getCookie("Authorization");
+
+          if (!authorizationToken) {
+            alert("Anda harus login terlebih dahulu.");
+            window.location.href = "login.html";
+            return;
+          }
+
+          const response = await fetch("http://localhost:8080/notifications", {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${authorizationToken}`,
+            },
+          });
+
+          if (!response.ok) {
+            throw new Error("Gagal mengambil data notifikasi");
+          }
+
+          notifications = await response.json();
+        } catch (error) {
+          console.error("Error fetching notifications:", error);
+        }
+      }
+
       function searchRooms(rooms) {
         const filteredRooms = rooms.filter((room) => {
+          // Filter ruangan berdasarkan kapasitas, ketersediaan, dan kesesuaian waktu
           return (
             room.capacity >= parseInt(capacity) &&
             room.availability.some((slot) => {
+              // Periksa apakah ada notifikasi dengan waktu yang sama
+              const hasMatchingNotification = notifications.some(
+                (notification) =>
+                  notification.room_id === room.id &&
+                  notification.start_time === startTime &&
+                  notification.end_time === endTime &&
+                  notification.status === "diterima"
+              );
+
               return (
                 slot.date === date &&
-                // Cek apakah ada tumpang tindih waktu
                 startTime >= slot.start_time &&
-                endTime <= slot.end_time // Tumpang tindih
+                endTime <= slot.end_time &&
+                !hasMatchingNotification // Pastikan tidak ada notifikasi yang cocok
               );
             })
           );
@@ -111,7 +147,6 @@
         displayRooms(filteredRooms);
       }
 
-      // Fungsi untuk menampilkan ruangan
       function displayRooms(filteredRooms) {
         const roomList = document.getElementById("room-list");
         if (filteredRooms.length === 0) {
@@ -128,38 +163,36 @@
               startTime >= slot.start_time &&
               endTime <= slot.end_time
             ) {
-              // Hanya roomId yang diteruskan
               html += `
-                    <div class="room-card shadow-sm p-4 rounded mb-3" 
-                         onclick="window.location.href='tanggal.html?roomId=${room.id}'">
-                        <h3 class="mb-2">${room.name}</h3>
-                        <p class="mb-1 text-muted">Tersedia jam <strong>${slot.start_time} - ${slot.end_time}</strong></p>
-                        <div class="status">
-                            <span class="badge badge-success">Tersedia</span>
-                        </div>
+                <div class="room-card shadow-sm p-4 rounded mb-3" 
+                     onclick="window.location.href='tanggal.html?roomId=${room.id}'">
+                    <h3 class="mb-2">${room.name}</h3>
+                    <p class="mb-1 text-muted">Tersedia jam <strong>${slot.start_time} - ${slot.end_time}</strong></p>
+                    <div class="status">
+                        <span class="badge badge-success">Tersedia</span>
                     </div>
-                `;
+                </div>
+              `;
             }
           });
         });
         roomList.innerHTML = html;
       }
 
-      // Fungsi untuk mengambil data ruangan dari backend
       async function fetchRooms() {
         try {
-          const authorizationToken = getCookie("Authorization"); // Mengambil token Authorization dari cookie
+          const authorizationToken = getCookie("Authorization");
 
           if (!authorizationToken) {
             alert("Anda harus login terlebih dahulu.");
-            window.location.href = "login.html"; // Redirect ke halaman login jika tidak ada Authorization
+            window.location.href = "login.html";
             return;
           }
 
           const response = await fetch("http://localhost:8080/rooms", {
             method: "GET",
             headers: {
-              Authorization: `Bearer ${authorizationToken}`, // Menambahkan header Authorization
+              Authorization: `Bearer ${authorizationToken}`,
             },
           });
 
@@ -168,9 +201,9 @@
           }
 
           const rooms = await response.json();
-          searchRooms(rooms); // Setelah data diambil, cari ruangan sesuai kriteria
+          searchRooms(rooms);
         } catch (error) {
-          console.error("Error:", error);
+          console.error("Error fetching rooms:", error);
           document.getElementById("room-list").innerHTML =
             '<p class="text-center">Terjadi kesalahan dalam mengambil data.</p>';
         }
@@ -181,29 +214,30 @@
         const parts = value.split(`; ${name}=`);
         if (parts.length === 2) return parts.pop().split(";").shift();
       }
-      // Panggil fungsi untuk mengambil data dan menampilkan ruangan
-      fetchRooms();
 
-      window.onload = function () {
-            const authButton = document.getElementById("authButton");
-    
-            // Periksa keberadaan cookie Authorization
-            if (document.cookie.includes("Authorization")) {
-                authButton.textContent = "Logout"; // Ubah teks menjadi Logout
-                authButton.onclick = function () {
-                    // Hapus cookie Authorization untuk logout
-                    document.cookie = "Authorization=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-                    document.cookie = "Username=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-                    alert("Anda telah berhasil logout.");
-                    window.location.href = "index.html"; // Arahkan ke halaman utama
-                };
-            } else {
-                authButton.textContent = "Login"; // Tetap Login
-                authButton.onclick = function () {
-                    window.location.href = "login.html"; // Arahkan ke halaman login
-                };
-            }
-        };
+      window.onload = async function () {
+        await fetchNotifications(); // Ambil notifikasi terlebih dahulu
+        fetchRooms(); // Kemudian ambil ruangan
+
+        const authButton = document.getElementById("authButton");
+
+        if (document.cookie.includes("Authorization")) {
+          authButton.textContent = "Logout";
+          authButton.onclick = function () {
+            document.cookie =
+              "Authorization=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+            document.cookie =
+              "Username=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+            alert("Anda telah berhasil logout.");
+            window.location.href = "index.html";
+          };
+        } else {
+          authButton.textContent = "Login";
+          authButton.onclick = function () {
+            window.location.href = "login.html";
+          };
+        }
+      };
     </script>
   </body>
 </html>
